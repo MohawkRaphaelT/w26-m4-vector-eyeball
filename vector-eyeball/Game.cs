@@ -28,24 +28,50 @@ namespace MohawkGame2D
         public void Update()
         {
             Window.ClearBackground(Color.OffWhite);
-            DrawEyeball(Window.Size / 2);
+            DrawEyeball(Window.Size / 2, 50);
         }
 
-        void DrawEyeball(Vector2 position)
+        void DrawEyeball(Vector2 eyePosition, float radius)
         {
+            // Calulate ratios for each eye
+            float corneaR = radius * 1.0f; // 1.0 = 100%
+            float irisR = radius * 0.7f;   // 0.7 =  70%
+            float pupilR = radius * 0.3f;  // 0.3 =  30%
+
             // Cornea
             Draw.LineSize = 1; // 1px
             Draw.LineColor = Color.Black;
             Draw.FillColor = Color.White;
-            Draw.Circle(position, 50);
+            Draw.Circle(eyePosition, corneaR);
+
+            // Set up our look vector
+            // To go form point A to point B, we do B - A
+            Vector2 mousePosition = Input.GetMousePosition();
+            Vector2 vectorFromEyeToMouse = mousePosition - eyePosition;
+            // Split vector into its 2 components: direction and magnitude
+            Vector2 direction = Vector2.Normalize(vectorFromEyeToMouse);
+            float magnitude = vectorFromEyeToMouse.Length();
+
+            // Calculate where to position iris and pupil
+            Vector2 irisPupilPosition;
+            float maxMoveDistance = corneaR - irisR;
+            bool isInsideEye = magnitude < maxMoveDistance;
+            if (isInsideEye == true)
+            {
+                irisPupilPosition = mousePosition;
+            }
+            else // is outside eye
+            {
+                irisPupilPosition = eyePosition + direction * maxMoveDistance;
+            }
 
             // Iris
             Draw.FillColor = Color.Gray;
-            Draw.Circle(position, 35);
+            Draw.Circle(irisPupilPosition, irisR);
 
             // Pupil
             Draw.FillColor = Color.Black;
-            Draw.Circle(position, 20);
+            Draw.Circle(irisPupilPosition, pupilR);
         }
     }
 
