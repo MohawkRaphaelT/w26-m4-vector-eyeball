@@ -11,24 +11,34 @@ namespace MohawkGame2D
     public class Game
     {
         // Place your variables here:
+        Vector2[] positions = [
+            new (200, 200),
+            new (100, 100),
+            new (300, 100),
+            ];
 
+        float[] radii = [
+            50,
+            10,
+            35,
+            ];
 
-        /// <summary>
-        ///     Setup runs once before the game loop begins.
-        /// </summary>
         public void Setup()
         {
             Window.SetTitle("Eyeball Animation with Vectors");
             Window.SetSize(400, 400);
         }
 
-        /// <summary>
-        ///     Update runs every frame.
-        /// </summary>
         public void Update()
         {
             Window.ClearBackground(Color.OffWhite);
-            DrawEyeball(Window.Size / 2, 50);
+
+            for (int i = 0; i < positions.Length; i++)
+            {
+                Vector2 position = positions[i];
+                float radius = radii[i];
+                DrawEyeball(position, radius);
+            }
         }
 
         void DrawEyeball(Vector2 eyePosition, float radius)
@@ -50,12 +60,12 @@ namespace MohawkGame2D
             Vector2 vectorFromEyeToMouse = mousePosition - eyePosition;
             // Split vector into its 2 components: direction and magnitude
             Vector2 direction = Vector2.Normalize(vectorFromEyeToMouse);
-            float magnitude = vectorFromEyeToMouse.Length();
+            float distance = vectorFromEyeToMouse.Length();
 
             // Calculate where to position iris and pupil
             Vector2 irisPupilPosition;
             float maxMoveDistance = corneaR - irisR;
-            bool isInsideEye = magnitude < maxMoveDistance;
+            bool isInsideEye = distance < maxMoveDistance;
             if (isInsideEye == true)
             {
                 irisPupilPosition = mousePosition;
